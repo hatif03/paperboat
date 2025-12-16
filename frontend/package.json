@@ -1,17 +1,27 @@
 {
-  "name": "frontend",
+  "name": "paperboat-frontend",
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --port 5173",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"
   },
   "dependencies": {
+    "@radix-ui/react-dialog": "^1.1.15",
+    "@radix-ui/react-tabs": "^1.1.13",
+    "@radix-ui/themes": "^3.2.1",
+    "@supabase/supabase-js": "^2.86.0",
+    "framer-motion": "^12.23.25",
+    "idb-keyval": "^6.2.2",
+    "lucide-react": "^0.554.0",
     "next": "16.0.10",
     "react": "19.2.1",
-    "react-dom": "19.2.1"
+    "react-dom": "19.2.1",
+    "react-easy-crop": "^5.5.5",
+    "sonner": "^2.0.7",
+    "tldraw": "3.15.5"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

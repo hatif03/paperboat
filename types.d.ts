@@ -12,8 +12,14 @@ declare module 'motia' {
   }
 
   interface Handlers {
-    'ProcessGreeting': EventHandler<{ timestamp: string; appName: string; greetingPrefix: string; requestId: string }, never>
-    'HelloAPI': ApiRouteHandler<Record<string, unknown>, ApiResponse<200, { message: string; status: string; appName: string }>, { topic: 'process-greeting'; data: { timestamp: string; appName: string; greetingPrefix: string; requestId: string } }>
+    'ProcessVideoGeneration': EventHandler<{ jobId: string; userId: string; startingImage: string; endingImage?: string; customPrompt: string; globalContext: string; durationSeconds: number }, never>
+    'HealthCheck': ApiRouteHandler<Record<string, unknown>, ApiResponse<200, { status: string; redis: boolean }> | ApiResponse<500, { status: string; redis: boolean }>, never>
+    'MergeVideos': ApiRouteHandler<{ videoUrls: Array<string> }, ApiResponse<200, { videoUrl: string }> | ApiResponse<400, { error: string }> | ApiResponse<401, { error: string }> | ApiResponse<500, { error: string }>, never>
+    'GetVideoJobStatus': ApiRouteHandler<Record<string, unknown>, ApiResponse<200, { status: 'done' | 'waiting' | 'pending' | 'error'; jobStartTime: string; jobEndTime?: string; videoUrl?: string; metadata?: Record<string, unknown> }> | ApiResponse<404, { error: string }> | ApiResponse<500, { error: string; errorMessage?: string }>, never>
+    'ExtractContext': ApiRouteHandler<Record<string, unknown>, ApiResponse<200, { entities: Array<{ id: string; description: string; appearance: string }>; environment: string; style: string }> | ApiResponse<400, { error: string }> | ApiResponse<500, { error: string; raw?: string }>, never>
+    'CreateVideoJob': ApiRouteHandler<Record<string, unknown>, ApiResponse<200, { jobId: string }> | ApiResponse<400, { error: string }> | ApiResponse<401, { error: string }> | ApiResponse<500, { error: string }>, { topic: 'process-video-generation'; data: { jobId: string; userId: string; startingImage: string; endingImage?: string; customPrompt: string; globalContext: string; durationSeconds: number } }>
+    'EnhanceImage': ApiRouteHandler<Record<string, unknown>, ApiResponse<200, { imageBytes: string }> | ApiResponse<400, { error: string }> | ApiResponse<401, { error: string }> | ApiResponse<500, { error: string }>, never>
+    'UploadVideo': ApiRouteHandler<Record<string, unknown>, ApiResponse<200, { url: string }> | ApiResponse<400, { error: string }> | ApiResponse<500, { error: string }>, never>
   }
     
 }

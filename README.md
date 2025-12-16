@@ -1,84 +1,211 @@
-# paperboat
+# Paperboat - AI Video Storyboarding
 
-A Motia project created with the starter template.
+> Direct Your Video Frame by Frame
 
-## What is Motia?
+AI-powered video storyboarding that transforms sketches into context-aware video clips. Draw, prompt, generate—infinitely.
 
-Motia is an open-source, unified backend framework that eliminates runtime fragmentation by bringing **APIs, background jobs, queueing, streaming, state, workflows, AI agents, observability, scaling, and deployment** into one unified system using a single core primitive, the **Step**.
+## Architecture
 
-## Quick Start
-
-```bash
-# Start the development server
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
+```
+┌─────────────────┐
+│  Next.js App    │  (frontend/)
+│  - Canvas UI    │
+│  - Auth Pages   │
+│  - Dashboard    │
+└────────┬────────┘
+         │ HTTP API
+         │ (Bearer Token)
+         ▼
+┌─────────────────┐
+│  Motia Backend  │  (src/)
+│  - API Steps    │
+│  - Event Steps  │
+│  - Services     │
+└────────┬────────┘
+         │
+    ┌────┴────┬──────────┬──────────┐
+    ▼         ▼          ▼          ▼
+┌────────┐ ┌──────┐ ┌─────────┐ ┌──────┐
+│Supabase│ │Redis │ │Vertex AI│ │GCS   │
+│(Auth+  │ │(Jobs)│ │(Video/  │ │(Files)│
+│Credits)│ │      │ │Image)   │ │      │
+└────────┘ └──────┘ └─────────┘ └──────┘
 ```
 
-This starts the Motia runtime and the **Workbench** - a powerful UI for developing and debugging your workflows. By default, it's available at [`http://localhost:3000`](http://localhost:3000).
+## Features
 
+| Feature | Description |
+|---------|-------------|
+| 🎨 **Interactive Canvas** | Draw instructions directly on frames using Tldraw |
+| 🤖 **AI Video Generation** | Powered by Google Vertex AI (Veo 3.1 & Gemini 2.5) |
+| 🔗 **Frame-by-Frame Workflow** | Sequential frames connected by arrows build your story |
+| ⚡ **Image Enhancement** | AI-powered frame improvement on demand |
+| 🎬 **Video Merging** | Combine clips into seamless sequences |
+
+## Prerequisites
+
+- Node.js 18+
+- Redis (local or hosted) - optional, Motia has built-in memory server
+- Google Cloud Project (Vertex AI enabled)
+- Supabase project
+
+## Setup
+
+### Backend Setup
+
+1. Install dependencies:
 ```bash
-# Test your first endpoint
-curl http://localhost:3000/hello
+npm install
 ```
 
-## Step Types
+2. Create a `.env` file with the following variables:
+```env
+# Google Cloud / Vertex AI
+GOOGLE_CLOUD_PROJECT=your-gcp-project-id
+GOOGLE_CLOUD_LOCATION=us-central1
+GOOGLE_GENAI_USE_VERTEXAI=true
+GOOGLE_CLOUD_BUCKET_NAME=your-gcs-bucket-name
 
-Every Step has a `type` that defines how it triggers:
+# Redis (optional - leave empty to use Motia's built-in memory server)
+# REDIS_URL=redis://default:password@localhost:6379
 
-| Type | When it runs | Use case |
-|------|--------------|----------|
-| **`api`** | HTTP request | REST APIs, webhooks |
-| **`event`** | Event emitted | Background jobs, workflows |
-| **`cron`** | Schedule | Cleanup, reports, reminders |
+# Supabase (auth & database)
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_SECRET_KEY=your-service-role-key
 
-## Development Commands
+# Frontend URL (for CORS)
+FRONTEND_URL=http://localhost:5173
+```
 
+3. Set up Google Cloud authentication:
 ```bash
-# Start Workbench and development server
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
+gcloud auth application-default login
+```
 
-# Start production server (without hot reload)
-npm run start
-# or
-yarn start
-# or
-pnpm start
-
-# Generate TypeScript types from Step configs
+4. Generate types:
+```bash
 npm run generate-types
-# or
-yarn generate-types
-# or
-pnpm generate-types
+```
 
-# Build project for deployment
-npm run build
-# or
-yarn build
-# or
-pnpm build
+5. Start the backend:
+```bash
+npm run dev
+```
+
+The backend will be available at http://localhost:3000
+
+### Frontend Setup
+
+1. Navigate to frontend directory:
+```bash
+cd frontend
+```
+
+2. Install dependencies:
+```bash
+npm install
+```
+
+3. Create a `.env.local` file:
+```env
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-public-key
+NEXT_PUBLIC_BACKEND_URL=http://localhost:3000
+```
+
+4. Start the frontend:
+```bash
+npm run dev
+```
+
+The frontend will be available at http://localhost:5173
+
+## Supabase Setup
+
+1. Create a Supabase project at https://supabase.com
+
+2. Enable auth providers (Google/GitHub) in the Supabase dashboard
+
+3. Create the required database tables:
+   - `enums.sql` - Required enum types
+   - `functions.sql` - Required functions (like `sub_user_credits`)
+
+4. Create a `profiles` table with:
+   - `user_id` (UUID, references auth.users)
+   - `credits` (INTEGER)
+   - `billing_type` (TEXT, 'free' or 'paid')
+
+5. Create a `transaction_log` table with:
+   - `transaction_log_id` (UUID, primary key)
+   - `user_id` (UUID, references auth.users)
+   - `transaction_type` (TEXT)
+   - `credit_usage` (INTEGER)
+   - `created_at` (TIMESTAMP)
+
+## API Endpoints
+
+### Video Generation
+- `POST /video` - Start a video generation job
+- `GET /video/:jobId` - Get job status
+
+### Image Enhancement
+- `POST /image` - Enhance an image using AI
+
+### Context Extraction
+- `POST /extract-context` - Extract scene information from video
+
+### Video Merging
+- `POST /video/merge` - Merge multiple videos
+
+### File Upload
+- `PUT /video/:itemName` - Upload a video file
+
+### Health Check
+- `GET /health` - Check service health
+
+## Development
+
+### Backend Commands
+```bash
+npm run dev          # Start development server with hot reload
+npm run start        # Start production server
+npm run generate-types # Generate TypeScript types
+npm run build        # Build for production
+```
+
+### Frontend Commands
+```bash
+npm run dev    # Start development server
+npm run build  # Build for production
+npm run start  # Start production server
+npm run lint   # Run linter
 ```
 
 ## Project Structure
 
 ```
-steps/              # Your Step definitions (or use src/)
-motia.config.ts     # Motia configuration
-requirements.txt    # Python dependencies
+.
+├── src/                    # Motia backend
+│   ├── api/               # API Steps (HTTP endpoints)
+│   │   ├── video/         # Video-related endpoints
+│   │   ├── image/         # Image-related endpoints
+│   │   └── files/         # File upload endpoints
+│   ├── events/            # Event Steps (background tasks)
+│   │   └── video/         # Video processing events
+│   ├── services/          # Business logic services
+│   ├── types/             # TypeScript type definitions
+│   └── utils/             # Utility functions
+├── middlewares/           # Motia middlewares
+├── frontend/              # Next.js frontend
+│   ├── app/              # App Router pages
+│   ├── components/       # React components
+│   ├── contexts/         # React contexts
+│   ├── lib/              # Utilities and clients
+│   └── types/            # TypeScript types
+├── motia.config.ts       # Motia configuration
+└── package.json          # Backend dependencies
 ```
 
-Steps are auto-discovered from your `steps/` or `src/` directories - no manual registration required. You can write Steps in Python, TypeScript, or JavaScript, all in the same project.
+## License
 
-## Learn More
-
-- [Documentation](https://motia.dev/docs) - Complete guides and API reference
-- [Quick Start Guide](https://motia.dev/docs/getting-started/quick-start) - Detailed getting started tutorial
-- [Core Concepts](https://motia.dev/docs/concepts/overview) - Learn about Steps and Motia architecture
-- [Discord Community](https://discord.gg/motia) - Get help and connect with other developers
+MIT

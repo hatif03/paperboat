@@ -12,5 +12,49 @@
         "sourceHandlePosition": "right"
       }
     }
+  },
+  {
+    "id": "video-generation",
+    "config": {
+      "src\\events\\video\\process-video-generation.step.ts": {
+        "x": 350,
+        "y": 237
+      },
+      "src\\api\\video\\get-video-job-status.step.ts": {
+        "x": 18,
+        "y": 0
+      },
+      "src\\api\\video\\create-video-job.step.ts": {
+        "x": 0,
+        "y": 203
+      }
+    }
+  },
+  {
+    "id": "video-analysis",
+    "config": {
+      "src\\api\\video\\extract-context.step.ts": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  },
+  {
+    "id": "image-processing",
+    "config": {
+      "src\\api\\image\\enhance-image.step.ts": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  },
+  {
+    "id": "system",
+    "config": {
+      "src\\api\\health.step.ts": {
+        "x": 0,
+        "y": 0
+      }
+    }
   }
 ]

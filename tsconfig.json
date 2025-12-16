@@ -6,7 +6,7 @@
     "allowImportingTsExtensions": true,
     "noEmit": true,
     "esModuleInterop": true,
-    "strict": true,
+    "strict": false,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
@@ -17,15 +17,15 @@
     "jsx": "react-jsx"
   },
   "include": [
-    "**/*.ts",
+    "src/**/*.ts",
+    "middlewares/**/*.ts",
     "motia.config.ts",
-    "**/*.tsx",
-    "types.d.ts",
-    "**/*.jsx"
+    "types.d.ts"
   ],
   "exclude": [
     "node_modules",
     "dist",
-    "tests"
+    ".motia",
+    "frontend"
   ]
 }

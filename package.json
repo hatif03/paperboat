@@ -1,6 +1,6 @@
 {
-  "name": "paperboat",
-  "description": "",
+  "name": "paperboat-backend",
+  "description": "Paperboat AI Video Storyboarding Backend",
   "type": "module",
   "scripts": {
     "postinstall": "motia install",
@@ -11,9 +11,14 @@
     "clean": "rm -rf dist node_modules python_modules .motia .mermaid"
   },
   "keywords": [
-    "motia"
+    "motia",
+    "paperboat",
+    "video",
+    "ai"
   ],
   "dependencies": {
+    "@google-cloud/storage": "^7.14.0",
+    "@google/genai": "^1.0.0",
     "@motiadev/adapter-bullmq-events": "^0.17.9-beta.191",
     "@motiadev/core": "^0.17.9-beta.191",
     "@motiadev/plugin-bullmq": "^0.17.9-beta.191",
@@ -21,12 +26,17 @@
     "@motiadev/plugin-logs": "^0.17.9-beta.191",
     "@motiadev/plugin-observability": "^0.17.9-beta.191",
     "@motiadev/plugin-states": "^0.17.9-beta.191",
+    "@supabase/supabase-js": "^2.86.0",
     "motia": "^0.17.9-beta.191",
+    "redis": "^5.0.0",
+    "uuid": "^11.1.0",
     "zod": "^4.1.12"
   },
   "devDependencies": {
     "@motiadev/workbench": "^0.17.9-beta.191",
+    "@types/node": "^22.0.0",
     "@types/react": "^19.1.1",
+    "@types/uuid": "^10.0.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.3"
   }
